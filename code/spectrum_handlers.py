@@ -46,7 +46,7 @@ def compute_template(data, s1d_folder, wlbase):
     print("Computing template...")
     stack = []
     for i, row in data.iterrows():
-        print("\tAdding spectrum #{}, {}, logS = {}".format(i, row["filename"], row["logS"]))
+        print("\tAdding {}, logS = {}".format(row["filename"], "{0:.3f}".format(row["logS"])))
         
         spectrum = read_spectrum(
             filename=row["filename"] + "_s1d_A.fits", 
@@ -120,12 +120,12 @@ def measure_all_lines(spectrum, template, lines, wlbase):
         #  get the bit of the spectrum where the line is
         linemask = (wlbase >= line["ll"]) & (wlbase <= line["rr"])
         wlbase_masked = wlbase[linemask]
-        # relative_masked = relative[linemask]
-        flux_masked = spectrum["fls"][linemask]
+        relative_masked = relative[linemask]
+        # flux_masked = spectrum["fls"][linemask]
 
         # compute equivalent width of the line
         ew = get_eqw(
-                wlbase_masked, flux_masked, \
+                wlbase_masked, relative_masked, \
                 r1=[line["cl"], line["cr"]], \
                 r2=[line["ll"], line["lr"]], \
                 r3=[line["rl"], line["rr"]],

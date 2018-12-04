@@ -76,6 +76,5 @@ def process_file(row, wlbase, template, lines, outfiles):
 
 
 # measure lines in all spectra
-datalength = len(data)
 Parallel(n_jobs=settings.ncores)(delayed(process_file)(row, wlbase, template, lines, outfiles) \
     for i, row in data.iterrows())
