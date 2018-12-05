@@ -25,6 +25,7 @@ def plot_all_lines():
 
     for iline, line in lines.iterrows():
         filename = "{}{}.dat".format(int(line["center"]), line["name"])
+        print("Plotting {}".format(filename) )
         linedata = pd.read_csv(settings.output_path + filename, header=0, delim_whitespace=True)
 
         data = pd.merge(linedata, file_list, how='inner', on='filename', \
@@ -33,8 +34,8 @@ def plot_all_lines():
         f, ax = plt.subplots(2, 2, figsize=(10,9))
 
         labels = [
-            [ ["logS", "ew"] , ["rv", "ew"] ],
-            [ ["logS", "asym"] , ["rv", "asym"] ]
+            [ ["logS", "ew"] , ["rvc", "ew"] ],
+            [ ["logS", "asym"] , ["rvc", "asym"] ]
         ]
 
         for i in [0,1]:
@@ -56,6 +57,6 @@ def plot_all_lines():
         f.suptitle("{} {}".format(line["name"], line["center"]), fontweight='bold')
         plt.tight_layout(pad=3)
         plt.savefig(settings.plots_path + filename.replace(".dat", ".png"))
-        plt.show()
+        plt.close()
 
 plot_all_lines()
