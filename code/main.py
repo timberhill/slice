@@ -9,14 +9,10 @@ from joblib import Parallel, delayed
 
 # SETUP
 
-# common wavelength base
-wlbase = np.arange(3800, 6850, 0.01)
-ccdgap = (wlbase > 5300) & (wlbase < 5340)
-wlbase = wlbase[~ccdgap]
 
 # read the list of lines
 lines = pd.read_csv(settings.lines_list_path, header=0, delim_whitespace=True)
-outfiles = ["{}{}.dat".format(int(line["center"]), line["name"]) for i, line in lines.iterrows()]
+outfiles = ["{}{}.dat".format(int(line["center"]*100), line["name"]) for i, line in lines.iterrows()]
 
 # write headers in the output files
 for i in range(len(outfiles)):
@@ -49,8 +45,10 @@ data = pd.merge(file_list, s1dfiles, how="inner", on="filename", \
 template = sh.compute_template(
         data.nsmallest(settings.template_n, "logS"), 
         s1d_folder=settings.s1d_folder,
-        wlbase=wlbase
+        wlbase=settings.wlbase
     )
+# save the template for further use
+np.save(settings.output_path + 'template.npy', np.array(template))
 
 
 # RUN THE CODE
@@ -61,10 +59,10 @@ def process_file(row, wlbase, template, lines, outfiles):
         filename=row["filename"] + "_s1d_A.fits", 
         folder=settings.s1d_folder,
         rv=row["rv"],
-        wlbase=wlbase
+        wlbase=settings.wlbase
     )
 
-    measurements = sh.measure_all_lines(spectrum, template, lines, np.copy(wlbase))
+    measurements = sh.measure_all_lines(spectrum, template, lines, np.copy(settings.wlbase))
 
     for i in range(len(outfiles)):
         with open(settings.output_path + outfiles[i], "a") as out:
@@ -76,5 +74,5 @@ def process_file(row, wlbase, template, lines, outfiles):
 
 
 # measure lines in all spectra
-Parallel(n_jobs=settings.ncores)(delayed(process_file)(row, wlbase, template, lines, outfiles) \
+Parallel(n_jobs=settings.ncores)(delayed(process_file)(row, settings.wlbase, template, lines, outfiles) \
     for i, row in data.iterrows())
