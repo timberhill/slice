@@ -42,7 +42,7 @@ def read_spectrum(filename, folder="", rv=0, wlbase=[], norm=False):
     return spectrum
 
 
-def compute_template(data, s1d_folder, wlbase):
+def compute_template(data, s1d_folder, wlbase, method=np.median):
     print("Computing template...")
     stack = []
     for i, row in data.iterrows():
@@ -58,7 +58,7 @@ def compute_template(data, s1d_folder, wlbase):
 
         stack.append(spectrum["fls"])
         
-    template = { "wls" : wlbase, "fls" : np.median(np.array(stack), axis=0)}
+    template = { "wls" : wlbase, "fls" : method(np.array(stack), axis=0)}
     
     print("Done.")
     return template
