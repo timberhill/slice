@@ -6,18 +6,6 @@ import os
 from joblib import Parallel, delayed
 
 
-# read the list of lines
-lines = pd.read_csv(settings.lines_list_path, header=0, delim_whitespace=True)
-outfiles = ["{}{}.dat".format(int(line["center"]*100), line["name"]) for i, line in lines.iterrows()]
-
-# write headers in the output files
-for i in range(len(outfiles)):
-    with open(settings.output_path + outfiles[i], "w") as out:
-        out.write("filename" + "\t")
-        out.write("bjd"      + "\t")
-        out.write("ew"       + "\t")
-        out.write("asym"     + "\t")
-        out.write("\n")
 
 # read the data file
 file_list = pd.read_csv(settings.list_path, header=0, delim_whitespace=True)
@@ -46,55 +34,56 @@ data = data[ data["filename"].str.startswith("HARPS.2009") ]
 print(len(data))
 
 
-# compute low telluric template
-lowtemplate = sh.compute_template(
+# compute high telluric template
+hightemplate = sh.compute_template(
         data.nlargest(settings.template_n, "water6544"), 
         s1d_folder=settings.s1d_folder,
         wlbase=settings.wlbase,
-        method=np.average
+        method=np.median
     )
 
 # compute low telluric template
-hightemplate = sh.compute_template(
+lowtemplate = sh.compute_template(
         data.nsmallest(settings.template_n, "water6544"), 
         s1d_folder=settings.s1d_folder,
         wlbase=settings.wlbase,
-        method=np.average
+        method=np.median
     )
 
-import matplotlib.pyplot as plt
-plt.plot( lowtemplate["wls"],  lowtemplate["fls"] / hightemplate["fls"], "b-")
-plt.show()
+telluric_template = sh.compute_relative_spectrum(hightemplate, lowtemplate, settings.wlbase)
 
-exit()
+
+# iodine wavelength range ? 
+mask = (settings.wlbase >= 5000) #& (settings.wlbase <= 6300)
+telluric_template = {
+    "wls" : settings.wlbase[mask],
+    "fls" : telluric_template[mask]
+}
+
+# find the lines
+# see https://stackoverflow.com/questions/24656367/find-peaks-location-in-a-spectrum-numpy
+from scipy.signal import find_peaks
+Y = telluric_template["fls"] - 1
+X = telluric_template["wls"]
+Y *= -1 # flip it to find maxima
+# get the actual peaks
+peaks, _ = find_peaks(Y, height=0.02, distance=2)
+# multiply back for plotting purposes
+Y *= -1
+
+# plot the thing
+import matplotlib.pyplot as plt
+plt.plot(X, Y)
+plt.plot(X[peaks], Y[peaks], "x")
+plt.show()
 
 
 # save the template for further use
-np.save(settings.output_path + 'template.npy', np.array(template))
-
-
-# RUN THE CODE
-def process_file(row, wlbase, template, lines, outfiles):
-    print("Processing spectrum {}".format(row["filename"]))
-
-    spectrum = sh.read_spectrum(
-        filename=row["filename"] + "_s1d_A.fits", 
-        folder=settings.s1d_folder,
-        rv=row["rv"],
-        wlbase=settings.wlbase
-    )
-
-    measurements = sh.measure_all_lines(spectrum, template, lines, np.copy(settings.wlbase))
-
-    for i in range(len(outfiles)):
-        with open(settings.output_path + outfiles[i], "a") as out:
-            out.write("{}\t".format(row["filename"]))
-            out.write("{}\t".format(row["bjd"]))
-            out.write("{}\t".format(measurements[i]["ew"]))
-            out.write("{}".format(measurements[i]["asym"]))
-            out.write("\n")
-
-
-# measure lines in all spectra
-Parallel(n_jobs=settings.ncores)(delayed(process_file)(row, settings.wlbase, template, lines, outfiles) \
-    for i, row in data.iterrows())
+np.save(os.path.join(settings.output_path, "telluric_template.npy"), np.array(telluric_template))
+# save telluric lines list
+table = np.array([X[peaks], -Y[peaks]]).T
+np.savetxt(fname=os.path.join(settings.output_path, "telluric_lines.dat"), 
+            X=table,
+            header="wavelength\tdepth",
+            delimiter="\t",
+            fmt=['%0.2f', '%0.5f'])

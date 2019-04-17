@@ -9,7 +9,7 @@ output_path  = "../data/results/" # save per-line measurements here (1 file per 
 summary_file = "../data/results.dat" # file to save aggregated line data as amplitudes and correlation coefficients
 plots_path = "../data/plots/"
 
-template_n   = 30 # number of spectra to stack for low activity template
+template_n   = 20 # number of spectra to stack for low activity template
 ncores       = 2 # number of cores to utilize
 
 
