@@ -35,8 +35,10 @@ def read_spectrum(filename, folder="", rv=0, wlbase=[], norm=False):
     )
 
     # normalise
-    m = np.median(spectrum["fls"][(spectrum["wls"] > 5600)&(spectrum["wls"] < 5700)])
-    spectrum["fls"] /= m
+    if norm:
+        m = np.median(spectrum["fls"][(spectrum["wls"] > 5600)&(spectrum["wls"] < 5700)])
+        spectrum["fls"] /= m
+        
     spectrum["filename"] = filename
 
     return spectrum
