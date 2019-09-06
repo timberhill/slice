@@ -35,14 +35,16 @@ def read_spectrum(filename, folder="", rv=0, wlbase=[], norm=False):
     )
 
     # normalise
-    m = np.median(spectrum["fls"][(spectrum["wls"] > 5600)&(spectrum["wls"] < 5700)])
-    spectrum["fls"] /= m
+    if norm:
+        m = np.median(spectrum["fls"][(spectrum["wls"] > 5600)&(spectrum["wls"] < 5700)])
+        spectrum["fls"] /= m
+        
     spectrum["filename"] = filename
 
     return spectrum
 
 
-def compute_template(data, s1d_folder, wlbase):
+def compute_template(data, s1d_folder, wlbase, method=np.median):
     print("Computing template...")
     stack = []
     for i, row in data.iterrows():
@@ -58,7 +60,7 @@ def compute_template(data, s1d_folder, wlbase):
 
         stack.append(spectrum["fls"])
         
-    template = { "wls" : wlbase, "fls" : np.median(np.array(stack), axis=0)}
+    template = { "wls" : wlbase, "fls" : method(np.array(stack), axis=0)}
     
     print("Done.")
     return template
