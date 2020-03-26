@@ -6,9 +6,7 @@ import os
 from joblib import Parallel, delayed
 
 
-
 # SETUP
-
 
 # read the list of lines
 lines = pd.read_csv(settings.lines_list_path, header=0, delim_whitespace=True)

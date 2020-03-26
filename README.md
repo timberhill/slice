@@ -59,7 +59,7 @@ Each file contains:
 ### settings
 
 The code relies on a few settings (and files) that have default values for demonstration purposes.
-These are set in `code.settings.py`:
+These are set in `code/settings.py`:
 
 `lines_list_path` - a file containing the list of lines to measure and spectral ranges to measure the continuum and the line from, defined by 6 wavelengths from left to right _(default/example: `../data/active_lines.dat`)_
 
