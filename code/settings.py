@@ -2,15 +2,14 @@
 
 lines_list_path = "../data/active_lines.dat"
 
-list_path    = "../data/rvdata.dat" # list of files containing columns "filename", "rv"[in km/s] and "logS"
-# s1d_folder = "../data/s1d/" # folder which contains *s1d*.fits files from HARPS DRS
-s1d_folder   = "/media/timberhill/timberstick/s1d/"
-output_path  = "../data/results/" # save per-line measurements here (1 file per line)
+list_path    = "../data/rvdata.dat"  # list of files containing columns "filename", "rv"[in km/s] and "logS"
+s1d_folder   = "../data/s1d/"        # folder which contains *s1d*.fits files from HARPS DRS
+output_path  = "../data/results/"    # save per-line measurements here (1 file per line)
 summary_file = "../data/results.dat" # file to save aggregated line data as amplitudes and correlation coefficients
-plots_path = "../data/plots/"
+plots_path   = "../data/plots/"
 
 template_n   = 20 # number of spectra to stack for low activity template
-ncores       = 2 # number of cores to utilize
+ncores       = 2  # number of cores to utilize
 
 
 # common wavelength base
