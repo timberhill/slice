@@ -1,9 +1,11 @@
-import settings as settings
-import spectrum_handlers as sh
 import pandas as pd
 import numpy as np
 import os
 from joblib import Parallel, delayed
+
+import settings as settings
+import spectrum_handlers as sh
+from plotter import plot_all_lines
 
 
 # SETUP
@@ -72,5 +74,13 @@ def process_file(row, wlbase, template, lines, outfiles):
 
 
 # measure lines in all spectra
-Parallel(n_jobs=settings.ncores)(delayed(process_file)(row, settings.wlbase, template, lines, outfiles) \
-    for i, row in data.iterrows())
+if settings.ncores > 1:
+    Parallel(n_jobs=settings.ncores)(delayed(process_file)(row, settings.wlbase, template, lines, outfiles) \
+        for i, row in data.iterrows())
+else:
+    for i, row in data.iterrows():
+        process_file(row, settings.wlbase, template, lines, outfiles)
+
+# plot lines' correlations
+if settings.plots_path is not None:
+    plot_all_lines()

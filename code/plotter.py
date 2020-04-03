@@ -52,4 +52,6 @@ def plot_all_lines():
         plt.savefig(settings.plots_path + filename.replace(".dat", ".png"))
         plt.close()
 
-plot_all_lines()
+
+if __name__ == "__main__":
+    plot_all_lines()
