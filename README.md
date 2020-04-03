@@ -21,10 +21,7 @@ The code is not a package and doesn't need installation, just clone the reposito
 
 ### run
 
-To run, go to the `code` folder and run the example with
-```bash
-$ python main.py
-```
+Run the code with `python slice` in the repository.
 
 ### results
 
@@ -59,20 +56,20 @@ Each file contains:
 ### settings
 
 The code relies on a few settings (and files) that have default values for demonstration purposes.
-These are set in `code/settings.py`:
+These are set in `slice/settings.py`:
 
-`lines_list_path` - a file containing the list of lines to measure and spectral ranges to measure the continuum and the line from, defined by 6 wavelengths from left to right _(default/example: `../data/active_lines.dat`)_
+`lines_list_path` - a file containing the list of lines to measure and spectral ranges to measure the continuum and the line from, defined by 6 wavelengths from left to right _(default/example: `data/active_lines.dat`)_
 
-`list_path` - radial velocity and S-index values for the spectra _(default/example: `../data/rvdata.dat`)_
+`list_path` - radial velocity and S-index values for the spectra _(default/example: `data/rvdata.dat`)_
 
-`s1d_folder` - folder containing the `_s1d_` spectra _(default/example: `../data/s1d/`)_
+`s1d_folder` - folder containing the `_s1d_` spectra _(default/example: `data/s1d/`)_
 
-`output_path` - output directory for the individual line files _(default/example: `../data/results/`)_
+`output_path` - output directory for the individual line files _(default/example: `data/results/`)_
 
-`summary_file` - summarized table with variation fo all the lines _(default/example: `../data/results.dat`)_
+`summary_file` - summarized table with variation fo all the lines _(default/example: `data/results.dat`)_
 
-`plots_path` - output plots directory _(default/example: `../data/plots/`)_
+`plots_path` - output plots directory _(default/example: `data/plots/`)_
 
-`template_n` - number of spectra with the lowest S-index to average for a low activity template _(default/example: 20)_
+`template_n` - number of spectra with the lowest S-index to average for a low activity template _(default/example: 10)_
 
 `ncores` - number of cores to utilize _(default/example: 2)_
